@@ -89,9 +89,9 @@ app.use((err, req, res, next) => {
 
 async function startServer() {
   try {
-    // Conectar ao MongoDB
+    // Configurar conexão com Supabase
     await connectDB();
-    logger.info('✅ Conectado ao MongoDB');
+    logger.info('✅ Supabase configurado com sucesso');
 
     // Iniciar servidor
     app.listen(PORT, () => {

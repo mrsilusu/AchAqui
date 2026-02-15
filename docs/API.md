@@ -53,7 +53,7 @@ Registrar novo usuário.
 
 #### `POST /auth/login`
 
-Fazer login.
+Fazer login (Supabase Auth).
 
 **Payload:**
 ```json
@@ -72,7 +72,7 @@ Fazer login.
     "name": "João Silva",
     "role": "client"
   },
-  "token": "eyJhbGciOiJIUzI1NiIs..."
+  "token": "SUPABASE_ACCESS_TOKEN"
 }
 ```
 

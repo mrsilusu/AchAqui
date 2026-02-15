@@ -1,17 +1,20 @@
-import mongoose from 'mongoose';
+import supabase from './supabase.js';
 import logger from './logger.js';
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.DATABASE_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    if (!process.env.SUPABASE_URL) {
+      throw new Error('SUPABASE_URL não configurada');
+    }
 
-    logger.info(`MongoDB conectado: ${conn.connection.host}`);
-    return conn;
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_ANON_KEY) {
+      throw new Error('SUPABASE_SERVICE_ROLE_KEY ou SUPABASE_ANON_KEY não configurada');
+    }
+
+    logger.info(`Supabase configurado: ${process.env.SUPABASE_URL}`);
+    return supabase;
   } catch (error) {
-    logger.error(`Erro ao conectar MongoDB: ${error.message}`);
+    logger.error(`Erro ao configurar Supabase: ${error.message}`);
     process.exit(1);
   }
 };

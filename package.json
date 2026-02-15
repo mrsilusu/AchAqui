@@ -1,0 +1,29 @@
+{
+  "name": "achaqui",
+  "version": "1.0.0",
+  "description": "**AchAqui** é uma plataforma mobile-first que conecta clientes com prestadores de serviços locais em Angola. Focado em simplicidade, rapidez e integração com WhatsApp.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrsilusu/AchAqui.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mrsilusu/AchAqui/issues"
+  },
+  "homepage": "https://github.com/mrsilusu/AchAqui#readme",
+  "dependencies": {
+    "expo": "^54.0.33",
+    "react": "^19.2.4",
+    "react-native": "^0.84.0"
+  }
+}

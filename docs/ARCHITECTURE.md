@@ -44,7 +44,7 @@ AchAqui é uma aplicação mobile-first baseada em arquitetura cliente-servidor,
 │  ├─ CORS                            │
 │  ├─ Rate Limiter                    │
 │  ├─ Error Handler                   │
-│  └─ Authentication (JWT)            │
+│  └─ Authentication (Supabase Auth)  │
 ├─────────────────────────────────────┤
 │  Routes                             │
 │  ├─ /api/auth (Autenticação)        │
@@ -58,7 +58,9 @@ AchAqui é uma aplicação mobile-first baseada em arquitetura cliente-servidor,
 │  Services (Regras de Negócio)       │
 ├─────────────────────────────────────┤
 │  Data Access Layer                  │
-│  ├─ MongoDB (Dados)                 │
+│  ├─ Supabase (Postgres) (Dados)     │
+│  │   - Postgres gerido + Auth + Storage
+│  │   - Recomendado para produção (Supabase Cloud)
 │  └─ Redis (Cache)                   │
 └─────────────────────────────────────┘
 ```
@@ -91,8 +93,8 @@ AchAqui é uma aplicação mobile-first baseada em arquitetura cliente-servidor,
 Cliente (App)
   ↓ [GET /api/services?category=...&lat=...&lon=...]
 Backend
-  ↓ [Query MongoDB]
-MongoDB
+  ↓ [Query Supabase]
+Supabase (Postgres)
   ↓ [Retorna documentos]
 Backend
   ↓ [Retorna JSON]
@@ -112,7 +114,7 @@ WhatsApp (Cliente)
   ↓ [Backend recebe webhook]
 Backend
   ↓ [Processa e salva em BD]
-MongoDB
+Supabase (Postgres)
   ↓ [Novo registro de interação]
 Backend
   ↓ [Opcional: Notifica prestador]
@@ -129,8 +131,8 @@ Backend
   ↓ [Valida dados]
   ↓ [Calcula nova média]
   ↓ [Atualiza User.rating e Service.rating]
-MongoDB
-  ↓ [Salva Rating doc]
+Supabase (Postgres)
+  ↓ [Salva rating]
   ↓ [Atualiza rating em User e Service]
 Backend
   ↓ [Retorna sucesso]
@@ -144,7 +146,7 @@ Tela (Mostra mensagem de sucesso)
 ### User
 ```javascript
 {
-  _id: ObjectId,
+  id: UUID,
   name: String,
   email: String,
   phone: String,
@@ -178,11 +180,11 @@ Tela (Mostra mensagem de sucesso)
 ### Service
 ```javascript
 {
-  _id: ObjectId,
+  id: UUID,
   title: String,
   description: String,
   category: String,
-  provider_id: ObjectId,
+  provider_id: UUID,
   price: {
     value: Number,
     currency: String
@@ -201,10 +203,10 @@ Tela (Mostra mensagem de sucesso)
 ### Rating
 ```javascript
 {
-  _id: ObjectId,
-  user_id: ObjectId,
-  service_id: ObjectId,
-  provider_id: ObjectId,
+  id: UUID,
+  user_id: UUID,
+  service_id: UUID,
+  provider_id: UUID,
   score: Number (1-5),
   comment: String,
   provider_reply: {
@@ -249,14 +251,14 @@ Protected Routes:
 
 **Fase 1 (Atual):**
 - Servidor único
-- MongoDB com replicação (3 nós)
+- Supabase Postgres gerenciado
 - Redis single instance
 - CDN para imagens
 
 **Fase 2:**
 - Load balancer (Nginx)
 - Múltiplos servidores Node
-- MongoDB sharding
+- Otimizações no Postgres (indices e particionamento)
 - Redis cluster
 
 **Fase 3:**
@@ -271,7 +273,7 @@ Protected Routes:
 |-----------|-----------|-------|
 | Frontend Mobile | React Native + Expo | Cross-platform, rápido de iterar |
 | Backend | Node.js + Express | JavaScript full-stack, async/await |
-| Database | MongoDB | Flexível, escalável, JSON nativo |
+| Database | Supabase (Postgres) | Postgres gerenciado com Auth e Storage |
 | Cache | Redis | Performance de leitura |
 | Auth | JWT | Stateless, simples |
 | API | REST | Familiares, fácil de debugar |
@@ -283,9 +285,9 @@ Protected Routes:
 
 ### Otimizações Planejadas
 
-1. **MongoDB Indexing**
-   - Índices em location, category, provider_id
-   - Índices compostos para buscas combinadas
+1. **Postgres Indexing**
+  - Índices em location, category, provider_id
+  - Índices compostos para buscas combinadas
 
 2. **Redis Caching**
    - Cache de categorias (refresh a cada 24h)
@@ -298,7 +300,7 @@ Protected Routes:
 
 4. **Backend**
    - Paginação de resultados
-   - Agregação no MongoDB
+  - Agregação no Postgres
    - Rate limiting
 
 ## Roadmap de Desenvolvimento

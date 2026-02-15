@@ -9,16 +9,12 @@ git clone https://github.com/mrsilusu/AchAqui.git && cd AchAqui
 # Copiar env
 cp .env.example .env
 
-# Opção A: Com Docker (recomendado)
-docker-compose up -d
-cd backend && npm install && npm run dev
-
-# Opção B: Sem Docker
-# Instalar MongoDB e Redis localmente
+# Ambiente 100% online
+# Configurar Supabase (cloud) e opcional Redis Cloud
 cd backend && npm install && npm run dev
 
 # Terminal diferente - Mobile
-cd mobile && npm install && expo start
+cd apps/mobile && npm install && expo start
 ```
 
 ---
@@ -27,10 +23,10 @@ cd mobile && npm install && expo start
 
 | Camada | Tecnologia | Local | Porta |
 |--------|-----------|-------|-------|
-| Frontend Mobile | React Native + Expo | `/mobile` | Expo (8081) |
+| Frontend Mobile | React Native + Expo | `/apps/mobile` | Expo (8081) |
 | Backend API | Node.js + Express | `/backend` | :3000 |
-| Database | MongoDB | Docker | 27017 |
-| Cache | Redis | Docker | 6379 |
+| Database | Supabase (Postgres) | Cloud/Local | 5432 |
+| Cache | Redis (Cloud) | Cloud | 6379 |
 
 ---
 
@@ -82,10 +78,8 @@ curl "http://localhost:3000/api/services?category=Elétrica"
 │   ├── src/config/
 │   │   ├── database.js
 │   │   └── logger.js
-│   ├── src/models/
-│   │   ├── User.js
-│   │   ├── Service.js
-│   │   └── Rating.js
+│   ├── src/middlewares/
+│   │   └── auth.js
 │   ├── src/routes/
 │   │   ├── auth.routes.js
 │   │   ├── user.routes.js
@@ -95,16 +89,17 @@ curl "http://localhost:3000/api/services?category=Elétrica"
 │   ├── package.json
 │   └── Dockerfile
 │
-├── mobile/
-│   ├── App.js                  # Entry point
-│   ├── app.json                # Expo config
-│   ├── src/
-│   │   ├── navigation/RootNavigator.js
-│   │   ├── screens/
-│   │   │   ├── HomeScreen.js
-│   │   │   ├── SearchScreen.js
+├── apps/
+│   ├── mobile/
+│   │   ├── App.js                  # Entry point
+│   │   ├── app.json                # Expo config
+│   │   ├── src/
+│   │   │   ├── navigation/RootNavigator.js
+│   │   │   ├── screens/
 │   │   │   ├── HistoryScreen.js
-│   │   │   └── ProfileScreen.js
+│   │   │   ├── HomeScreen.js
+│   │   │   ├── ProfileScreen.js
+│   │   │   └── SearchScreen.js
 │   │   ├── services/api.js
 │   │   ├── stores/index.js
 │   │   └── styles/theme.js
@@ -115,6 +110,7 @@ curl "http://localhost:3000/api/services?category=Elétrica"
     ├── API.md                   # Endpoints
     ├── WHATSAPP.md              # WhatsApp integration
     ├── SETUP.md                 # Installation guide
+    ├── SUPABASE.sql             # Schema SQL
     ├── CONTRIBUTE.md            # Contributing guide
     └── QUICK.md                 # Este arquivo
 ```
@@ -155,17 +151,18 @@ npm run lint          # Check code style
 npm run lint:fix      # Fix style issues
 
 # Mobile
-cd mobile
+cd apps/mobile
 expo start            # Start dev server
 expo build:web       # Build para web
 expo build:ios       # Build para iOS
 expo build:android   # Build para Android
 
-# Docker
 docker-compose up    # Start services
 docker-compose down  # Stop services
 docker-compose logs  # View logs
 docker-compose ps    # Check status
+## Docker
+Nao utilizado neste setup (ambiente 100% online)
 ```
 
 ---
@@ -219,7 +216,7 @@ docker-compose ps    # Check status
 | Problema | Solução |
 |----------|---------|
 | Porta 3000 em uso | `PORT=3001 npm run dev` |
-| MongoDB não conecta | `mongodb://localhost:27017` no .env |
+| Supabase não conecta | Verifique `SUPABASE_URL` e chaves no .env |
 | Expo não funciona | `expo creanup && expo start --clear` |
 | npm install falha | `npm cache clean --force && rm -rf node_modules` |
 | Git merge confuso | `git status` e resolve conflicts |

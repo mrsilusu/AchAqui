@@ -30,12 +30,11 @@ Um marketplace descentralizado para serviços essenciais:
 
 ## 🛠️ Stack Tecnológico
 
-### Backend
 - **Runtime**: Node.js 20+
 - **Framework**: Express.js
-- **Database**: MongoDB
+- **Database**: Supabase (Postgres)
 - **Cache**: Redis
-- **Authentication**: JWT
+- **Authentication**: Supabase Auth (JWT)
 - **API**: RESTful
 
 ### Frontend Mobile
@@ -59,6 +58,19 @@ Um marketplace descentralizado para serviços essenciais:
 
 ```
 AchAqui/
+├── apps/
+│   ├── mobile/
+│   │   ├── src/
+│   │   │   ├── screens/
+│   │   │   ├── components/
+│   │   │   ├── services/
+│   │   │   ├── stores/
+│   │   │   ├── navigation/
+│   │   │   └── utils/
+│   │   ├── app.json
+│   │   ├── package.json
+│   │   └── .env
+│   └── web/
 ├── backend/
 │   ├── src/
 │   │   ├── models/
@@ -70,17 +82,6 @@ AchAqui/
 │   │   └── config/
 │   ├── package.json
 │   ├── Dockerfile
-│   └── .env
-├── mobile/
-│   ├── src/
-│   │   ├── screens/
-│   │   ├── components/
-│   │   ├── services/
-│   │   ├── stores/
-│   │   ├── navigation/
-│   │   └── utils/
-│   ├── app.json
-│   ├── package.json
 │   └── .env
 ├── docs/
 │   ├── ARCHITECTURE.md
@@ -99,9 +100,9 @@ AchAqui/
 
 ### Pré-requisitos
 - Node.js 20+
-- Docker & Docker Compose
 - Git
 - Expo CLI: `npm install -g expo-cli`
+- Projeto Supabase Cloud (obrigatório)
 
 ### 1. Instalação
 
@@ -110,17 +111,20 @@ git clone https://github.com/mrsilusu/AchAqui.git
 cd AchAqui
 cp .env.example .env
 cd backend && npm install && cd ..
-cd mobile && npm install && cd ..
+cd apps/mobile && npm install && cd ..
 ```
 
-### 2. Iniciar Ambiente
+### 2. Iniciar Ambiente (100% online)
+
+1. Configure o Supabase Cloud e execute o schema em [docs/SUPABASE.sql](docs/SUPABASE.sql)
+2. Atualize `.env` com `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY`
+3. Inicie o backend localmente apenas para desenvolvimento (sem DB local)
 
 ```bash
-docker-compose up -d
 cd backend && npm run dev
 
 # Terminal diferente:
-cd mobile && expo start
+cd apps/mobile && expo start
 ```
 
 ## 📱 Fluxo de Uso

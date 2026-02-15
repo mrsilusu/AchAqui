@@ -1,21 +1,6 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongo:7.0
-    container_name: achaqui_mongodb
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: achaqui
-      MONGO_INITDB_ROOT_PASSWORD: changeme
-      MONGO_INITDB_DATABASE: achaqui
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-      - mongodb_config:/data/configdb
-    networks:
-      - achaqui_network
-
   backend:
     build:
       context: ./backend
@@ -25,10 +10,10 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: development
-      DATABASE_URL: mongodb://achaqui:changeme@mongodb:27017/achaqui
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       JWT_SECRET: dev_secret_key_change_in_production
-    depends_on:
-      - mongodb
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -46,8 +31,6 @@ services:
       - achaqui_network
 
 volumes:
-  mongodb_data:
-  mongodb_config:
   redis_data:
 
 networks:

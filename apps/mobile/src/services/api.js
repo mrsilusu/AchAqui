@@ -1,6 +1,11 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+const API_URL =
+  Constants.expoConfig?.extra?.apiUrl ||
+  Constants.manifest?.extra?.apiUrl ||
+  process.env.EXPO_PUBLIC_API_URL ||
+  'http://localhost:3000/api';
 
 const api = axios.create({
   baseURL: API_URL,

@@ -5,7 +5,7 @@
 - **Node.js**: v20+
 - **npm**: v9+
 - **Git**: Latest
-- **Docker & Docker Compose** (opcional, mas recomendado)
+- **Supabase Cloud** (obrigatório)
 - **Expo CLI**: `npm install -g expo-cli`
 
 ### Verificar Instalações
@@ -14,7 +14,6 @@
 node --version    # v20.x.x
 npm --version     # v9.x.x ou superior
 git --version     # git version x.x.x
-docker --version  # Docker version x.x.x
 expo --version    # Expo CLI x.x.x
 ```
 
@@ -39,53 +38,24 @@ cp .env.example .env
 ```env
 NODE_ENV=development
 API_PORT=3000
-DATABASE_URL=mongodb://localhost:27017/achaqui
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 # Deixe os tokens do WhatsApp vazios por enquanto
 # Serão adicionados posteriormente durante fase 2
 ```
 
-### 3. Instalar MongoDB (local)
+### 3. Configurar Supabase
 
-**macOS (Homebrew):**
-```bash
-brew tap mongodb/brew
-brew install mongodb-community
-brew services start mongodb-community
-```
+1. Criar um projeto em https://supabase.com
+2. Copiar `SUPABASE_URL`, `SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY`
+3. Atualizar o arquivo `.env` com essas variaveis
+4. Executar o schema SQL em [docs/SUPABASE.sql](SUPABASE.sql)
 
-**Ubuntu/Debian:**
-```bash
-sudo apt-get update
-sudo apt-get install -y mongodb
-sudo systemctl start mongodb
-```
+### 4. Cache (opcional, online)
 
-**Windows:**
-```
-Baixar de: https://www.mongodb.com/try/download/community
-Seguir instalador
-```
-
-### 4. Instalar Redis (local)
-
-**macOS:**
-```bash
-brew install redis
-brew services start redis
-```
-
-**Ubuntu/Debian:**
-```bash
-sudo apt-get install -y redis-server
-sudo systemctl start redis-server
-```
-
-**Windows:**
-```
-WSL: wsl apt-get install redis-server
-Ou com Docker: docker run -d -p 6379:6379 redis
-```
+Use Redis gerido (ex.: Upstash ou Redis Cloud). Se não usar cache agora, ignore.
 
 ### 5. Instalar Backend
 
@@ -107,7 +77,8 @@ curl http://localhost:3000/health
 ### 6. Instalar Mobile
 
 ```bash
-cd mobile
+cd apps/mobile
+cp .env.example .env
 npm install
 expo start
 ```
@@ -119,44 +90,11 @@ expo start
 
 ---
 
-## 🐳 Instalação Com Docker (Recomendado)
+## ☁️ Ambiente 100% Online
 
-### 1. Clonar e Configurar
-
-```bash
-git clone https://github.com/mrsilusu/AchAqui.git
-cd AchAqui
-cp .env.example .env
-```
-
-### 2. Iniciar Serviços
-
-```bash
-docker-compose up -d
-```
-
-**Verificar Status:**
-```bash
-docker-compose ps
-# Deve mostrar 3 containers rodando
-```
-
-### 3. Ver Logs
-
-```bash
-# Logs de todos os serviços
-docker-compose logs -f
-
-# Logs específicos
-docker-compose logs -f backend
-docker-compose logs -f mongodb
-```
-
-### 4. Parar Serviços
-
-```bash
-docker-compose down
-```
+- Base de dados e autenticação: Supabase Cloud
+- Cache (opcional): Redis Cloud/Upstash
+- Backend: qualquer provedor (Render, Fly, Railway, Cloud Run)
 
 ---
 
@@ -177,13 +115,7 @@ curl http://localhost:3000/health
 
 ### Database
 
-```bash
-# Conectar ao MongoDB
-mongo
-
-# Ou com MongoDB Compass:
-# mongodb://localhost:27017
-```
+Verifique se as variaveis do Supabase estao definidas no `.env` e se o projeto esta ativo no painel do Supabase.
 
 ### Redis
 
@@ -196,7 +128,7 @@ redis-cli ping
 ### Mobile
 
 ```bash
-cd mobile
+cd apps/mobile
 npm start
 
 # Escanear QR code ou:
@@ -252,19 +184,10 @@ curl "http://localhost:3000/api/services?category=Elétrica&city=Luanda"
 
 ## 🔧 Troubleshooting
 
-### "Não consigo conectar ao MongoDB"
+### "Nao consigo conectar ao Supabase"
 
-```bash
-# Verificar se MongoDB está rodando
-# macOS:
-brew services list
-
-# Ubuntu:
-sudo systemctl status mongodb
-
-# Iniciar se parado:
-sudo systemctl start mongodb
-```
+- Confirme `SUPABASE_URL`, `SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY` no `.env`
+- Verifique se o projeto esta ativo no painel do Supabase
 
 ### "Port 3000 already in use"
 
@@ -311,10 +234,23 @@ expo start --clear
 
 ```
 AchAqui/
+├── apps/
+│   ├── mobile/                 # App React Native
+│   │   ├── src/
+│   │   │   ├── screens/         # Telas principais
+│   │   │   ├── components/      # Componentes reutilizáveis
+│   │   │   ├── services/        # Chamadas API
+│   │   │   ├── stores/          # Redux estados
+│   │   │   ├── navigation/      # Navegação
+│   │   │   └── styles/          # Temas e estilos
+│   │   ├── app.json
+│   │   ├── App.js               # Entry point
+│   │   └── package.json
+│   └── web/                     # App Web (opcional)
 ├── backend/                    # API Node.js
 │   ├── src/
 │   │   ├── config/            # Configurações
-│   │   ├── models/            # Esquemas MongoDB
+│   │   ├── models/            # Modelos de dados
 │   │   ├── controllers/       # Lógica de rotas
 │   │   ├── routes/            # Definição de rotas
 │   │   ├── services/          # Lógica de negócio
@@ -323,18 +259,6 @@ AchAqui/
 │   ├── package.json
 │   ├── Dockerfile
 │   └── .env
-│
-├── mobile/                     # App React Native
-│   ├── src/
-│   │   ├── screens/           # Telas principais
-│   │   ├── components/        # Componentes reutilizáveis
-│   │   ├── services/          # Chamadas API
-│   │   ├── stores/            # Redux estados
-│   │   ├── navigation/        # Navegação
-│   │   └── styles/            # Temas e estilos
-│   ├── app.json
-│   ├── App.js                 # Entry point
-│   └── package.json
 │
 ├── docs/                       # Documentação
 │   ├── ARCHITECTURE.md

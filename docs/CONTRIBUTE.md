@@ -84,7 +84,7 @@ cd backend
 npm run dev
 
 # Mobile (React Native)
-cd mobile
+cd apps/mobile
 expo start
 ```
 
@@ -125,7 +125,7 @@ npm run test
 npm run lint
 
 # Mobile
-cd mobile
+cd apps/mobile
 npm run lint
 # Testar no emulador/device físico
 ```
@@ -189,7 +189,7 @@ npm run lint:fix
 ### Mobile
 
 ```bash
-cd mobile
+cd apps/mobile
 
 # Linting
 npm run lint:fix
@@ -283,7 +283,7 @@ try {
 └── index.js         # Entry point
 ```
 
-### Mobile `/mobile/src`
+### Mobile `/apps/mobile/src`
 
 ```
 ├── screens/         # Telas do app
