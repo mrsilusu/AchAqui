@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "main": "index.js",
-git  "scripts": {
+  "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
